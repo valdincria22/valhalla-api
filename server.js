@@ -43,10 +43,10 @@ app.get("/keys", (req, res) => {
 });
 
 // ──────────────────────────────────────────────
-// VALIDAR KEY (verifica status, expiração, userid)
+// VALIDAR KEY (verifica status, expiração, hwid)
 // ──────────────────────────────────────────────
 app.get("/validate", (req, res) => {
-  const { key, userid } = req.query;
+  const { key, hwid } = req.query;
   if (!key) return res.json({ valid: false, message: "Key não informada" });
 
   const keys = loadKeys();
@@ -58,13 +58,13 @@ app.get("/validate", (req, res) => {
     return res.json({ valid: false, message: "Key expirada" });
   }
 
-  // Vínculo de userid (1 pessoa por key)
-  if (k.userid && k.userid !== userid) {
-    return res.json({ valid: false, message: "Key já em uso por outro usuário" });
+  // Vínculo de hwid (1 dispositivo por key, qualquer conta Roblox)
+  if (k.hwid && k.hwid !== hwid) {
+    return res.json({ valid: false, message: "Key já em uso em outro dispositivo" });
   }
 
-  if (!k.userid && userid) {
-    k.userid = userid;
+  if (!k.hwid && hwid) {
+    k.hwid = hwid;
     saveKeys(keys);
   }
 
