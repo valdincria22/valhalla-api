@@ -90,36 +90,33 @@ Tab:CreateToggle({
       isRunning = Value
       if isRunning then
          task.spawn(function()
-            -- Espera o caminho existir antes de continuar
-            local ok, ClaimReward = pcall(function()
+            local ok, RewardService = pcall(function()
                return ReplicatedStorage
                   :WaitForChild("Packages", 10)
                   :WaitForChild("_Index", 10)
                   :WaitForChild("sleitnick_knit@1.7.0", 10)
                   :WaitForChild("knit", 10)
                   :WaitForChild("Services", 10)
-                  :WaitForChild("ChallengeService", 10)
+                  :WaitForChild("RewardService", 10)
                   :WaitForChild("RF", 10)
-                  :WaitForChild("ClaimReward", 10)
+                  :WaitForChild("RequestPlayWithDeveloperAward", 10)
             end)
 
-            if not ok or not ClaimReward then
-               warn("ClaimReward não encontrado!")
+            if not ok or not RewardService then
+               warn("RewardService não encontrado!")
                return
             end
 
             while isRunning do
                pcall(function()
-                  ClaimReward:InvokeServer(currentId)
+                  RewardService:InvokeServer()
                end)
-               currentId += 1
                task.wait(0.5)
             end
          end)
       end
    end
 })
-
 --------------------------------------------------
 -- FPS BOOST
 --------------------------------------------------
