@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valhalla — License Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0b0f;
+    --bg2: #10121a;
+    --bg3: #161824;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+    --text: #f1f5f9;
+    --text2: #94a3b8;
+    --text3: #475569;
+    --card: rgba(255,255,255,0.03);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Sora', sans-serif; min-height: 100vh; }
+
+  /* LOGIN */
+  #login-screen {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,229,255,0.08) 0%, transparent 60%);
+  }
+  .login-box {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 48px 40px;
+    width: 100%; max-width: 420px;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(0,229,255,0.06);
+  }
+  .logo { font-family:'JetBrains Mono',monospace; font-size:22px; font-weight:700; color:var(--accent); letter-spacing:2px; margin-bottom:6px; }
+  .logo-sub { color:var(--text3); font-size:11px; letter-spacing:3px; text-transform:uppercase; margin-bottom:28px; }
+  .api-url-row { display:flex; gap:8px; margin-bottom:12px; }
+  .inp {
+    width:100%; background:var(--bg3); border:1px solid var(--border);
+    border-radius:10px; padding:12px 16px; color:var(--text);
+    font-family:'JetBrains Mono',monospace; font-size:13px; margin-bottom:12px;
+    transition:border-color 0.2s;
+  }
+  .inp:focus { outline:none; border-color:var(--accent); }
+  .btn-primary {
+    width:100%; background:linear-gradient(135deg,var(--accent),#0ea5e9);
+    border:none; border-radius:10px; padding:13px; color:#000;
+    font-family:'Sora',sans-serif; font-weight:700; font-size:14px;
+    cursor:pointer; transition:opacity 0.2s,transform 0.1s; letter-spacing:1px;
+  }
+  .btn-primary:hover { opacity:0.9; transform:translateY(-1px); }
+  .login-err { color:var(--danger); font-size:12px; margin-top:10px; display:none; }
+  .conn-status { font-size:11px; font-family:'JetBrains Mono',monospace; margin-top:14px; }
+  .conn-ok { color:var(--accent3); }
+  .conn-err { color:var(--danger); }
+  .conn-checking { color:var(--warn); }
+
+  /* APP */
+  #app { display:none; min-height:100vh; }
+  .sidebar {
+    position:fixed; left:0; top:0; bottom:0; width:220px;
+    background:var(--bg2); border-right:1px solid var(--border);
+    display:flex; flex-direction:column; padding:24px 0; z-index:100;
+  }
+  .sidebar-logo { font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:700; color:var(--accent); letter-spacing:2px; padding:0 20px 24px; border-bottom:1px solid var(--border); margin-bottom:16px; }
+  .nav-item {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 20px; color:var(--text2); font-size:13px;
+    cursor:pointer; border-left:3px solid transparent; transition:all 0.15s;
+  }
+  .nav-item:hover { color:var(--text); background:rgba(255,255,255,0.04); }
+  .nav-item.active { color:var(--accent); background:rgba(0,229,255,0.06); border-left-color:var(--accent); }
+  .nav-icon { font-size:15px; width:18px; text-align:center; }
+  .sidebar-footer { margin-top:auto; padding:16px 20px 0; border-top:1px solid var(--border); }
+  .api-pill {
+    background:rgba(0,229,255,0.07); border:1px solid rgba(0,229,255,0.15);
+    border-radius:8px; padding:8px 10px; margin-bottom:10px;
+    font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--accent);
+    word-break:break-all; line-height:1.5;
+  }
+  .admin-badge { background:rgba(124,58,237,0.15); color:#a78bfa; font-size:11px; font-family:'JetBrains Mono',monospace; padding:6px 10px; border-radius:8px; display:flex; align-items:center; gap:6px; margin-bottom:10px; }
+  .btn-logout { width:100%; background:none; border:1px solid var(--border); border-radius:8px; padding:8px; color:var(--text3); font-size:12px; cursor:pointer; transition:all 0.15s; }
+  .btn-logout:hover { border-color:var(--danger); color:var(--danger); }
+
+  .main { margin-left:220px; padding:32px; }
+  .page { display:none; }
+  .page.active { display:block; }
+  .page-title { font-size:22px; font-weight:700; margin-bottom:4px; }
+  .page-sub { color:var(--text2); font-size:13px; margin-bottom:28px; }
+
+  /* STATS */
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:20px; }
+  .stat-label { color:var(--text3); font-size:11px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; }
+  .stat-value { font-size:28px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+  .stat-card.c-cyan .stat-value { color:var(--accent); }
+  .stat-card.c-green .stat-value { color:var(--accent3); }
+  .stat-card.c-red .stat-value { color:var(--danger); }
+  .stat-card.c-purple .stat-value { color:#a78bfa; }
+  .stat-change { font-size:11px; margin-top:6px; color:var(--text3); }
+
+  /* TABLE */
+  .table-wrap { background:var(--bg2); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
+  .table-header { display:flex; align-items:center; justify-content:space-between; padding:18px 20px; border-bottom:1px solid var(--border); }
+  .table-title { font-size:14px; font-weight:600; }
+  .table-actions { display:flex; gap:10px; }
+  .btn-sm {
+    background:rgba(0,229,255,0.08); border:1px solid rgba(0,229,255,0.2);
+    border-radius:8px; padding:7px 14px; color:var(--accent);
+    font-size:12px; font-weight:600; cursor:pointer; transition:all 0.15s;
+    font-family:'Sora',sans-serif;
+  }
+  .btn-sm:hover { background:rgba(0,229,255,0.14); }
+  .btn-sm.danger { background:rgba(239,68,68,0.08); border-color:rgba(239,68,68,0.2); color:var(--danger); }
+  .btn-sm.danger:hover { background:rgba(239,68,68,0.14); }
+  .btn-sm.success { background:rgba(16,185,129,0.08); border-color:rgba(16,185,129,0.2); color:var(--accent3); }
+  .btn-sm.warn { background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.2); color:var(--warn); }
+  table { width:100%; border-collapse:collapse; }
+  thead th { text-align:left; padding:12px 20px; font-size:11px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:1.2px; background:rgba(255,255,255,0.02); }
+  tbody tr { border-top:1px solid var(--border); transition:background 0.1s; }
+  tbody tr:hover { background:rgba(255,255,255,0.025); }
+  tbody td { padding:14px 20px; font-size:13px; }
+  .mono { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); }
+  .td-actions { display:flex; gap:6px; flex-wrap:wrap; }
+  .badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; font-family:'JetBrains Mono',monospace; }
+  .badge::before { content:''; width:6px; height:6px; border-radius:50%; display:inline-block; }
+  .badge.active { background:rgba(16,185,129,0.12); color:#34d399; }
+  .badge.active::before { background:#34d399; }
+  .badge.expired { background:rgba(239,68,68,0.12); color:#f87171; }
+  .badge.expired::before { background:#f87171; }
+  .badge.banned { background:rgba(107,114,128,0.12); color:#9ca3af; }
+  .badge.banned::before { background:#9ca3af; }
+
+  /* MODAL */
+  .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:999; opacity:0; pointer-events:none; transition:opacity 0.2s; }
+  .modal-bg.open { opacity:1; pointer-events:all; }
+  .modal { background:var(--bg2); border:1px solid var(--border2); border-radius:18px; padding:32px; width:90%; max-width:480px; transform:translateY(10px); transition:transform 0.2s; }
+  .modal-bg.open .modal { transform:translateY(0); }
+  .modal-title { font-size:17px; font-weight:700; margin-bottom:20px; }
+  .form-row { margin-bottom:16px; }
+  .form-label { font-size:12px; color:var(--text2); margin-bottom:6px; display:block; }
+  .form-inp { width:100%; background:var(--bg3); border:1px solid var(--border); border-radius:9px; padding:11px 14px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; transition:border-color 0.2s; }
+  .form-inp:focus { outline:none; border-color:var(--accent); }
+  select.form-inp { appearance:none; cursor:pointer; }
+  .modal-actions { display:flex; gap:10px; margin-top:24px; justify-content:flex-end; }
+  .btn-cancel { background:none; border:1px solid var(--border); border-radius:9px; padding:9px 18px; color:var(--text2); font-size:13px; cursor:pointer; }
+  .btn-confirm { background:var(--accent); border:none; border-radius:9px; padding:9px 18px; color:#000; font-weight:700; font-size:13px; cursor:pointer; font-family:'Sora',sans-serif; }
+
+  /* VALIDATE / GENERATE BOX */
+  .validate-box { max-width:560px; background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:32px; margin-bottom:24px; }
+  .validate-result { background:var(--bg3); border:1px solid var(--border); border-radius:12px; padding:20px; display:none; max-width:560px; }
+  .vr-row { display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); }
+  .vr-row:last-child { border-bottom:none; }
+  .vr-label { color:var(--text3); font-size:12px; }
+  .vr-val { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--accent); }
+
+  /* API DOCS */
+  .api-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:24px; margin-bottom:16px; }
+  .api-endpoint { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .method { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; padding:3px 9px; border-radius:5px; }
+  .method.get { background:rgba(16,185,129,0.12); color:#34d399; }
+  .method.post { background:rgba(0,229,255,0.1); color:var(--accent); }
+  .endpoint-url { font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--text); }
+  .code-block { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:14px 16px; font-family:'JetBrains Mono',monospace; font-size:12px; color:#a5f3fc; white-space:pre; overflow-x:auto; margin-top:12px; }
+  .api-desc { color:var(--text2); font-size:13px; margin-bottom:12px; line-height:1.6; }
+
+  /* LOADING */
+  .loading-row { text-align:center; padding:30px; color:var(--text3); font-size:13px; font-family:'JetBrains Mono',monospace; }
+
+  /* NOTIF */
+  .notif { position:fixed; top:20px; right:20px; background:var(--bg2); border:1px solid var(--border2); border-radius:10px; padding:14px 18px; font-size:13px; z-index:9999; transform:translateX(120%); transition:transform 0.3s; max-width:320px; }
+  .notif.show { transform:translateX(0); }
+  .notif.ok { border-color:rgba(16,185,129,0.4); color:#34d399; }
+  .notif.err { border-color:rgba(239,68,68,0.4); color:#f87171; }
+  .notif.warn { border-color:rgba(245,158,11,0.4); color:var(--warn); }
+
+  /* SEARCH */
+  .search-inp { background:var(--bg3); border:1px solid var(--border); border-radius:8px; padding:7px 12px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:12px; width:220px; transition:border-color 0.2s; }
+  .search-inp:focus { outline:none; border-color:var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="logo">⬡ VALHALLA</div>
+    <div class="logo-sub">License Management System</div>
+
+    <div style="text-align:left;margin-bottom:16px">
+      <label class="form-label" style="display:block;margin-bottom:6px;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">URL da API (Railway)</label>
+      <input class="inp" type="text" id="l-apiurl" placeholder="https://valhalla-api.up.railway.app" style="margin-bottom:0" />
+    </div>
+    <div style="text-align:left;margin-bottom:16px">
+      <label class="form-label" style="display:block;margin-bottom:6px;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px">Admin Token</label>
+      <input class="inp" type="password" id="l-token" placeholder="Seu ADMIN_TOKEN do Railway" style="margin-bottom:0" />
+    </div>
+    <button class="btn-primary" onclick="doLogin()">CONECTAR E ENTRAR</button>
+    <p class="login-err" id="l-err">Não foi possível conectar. Verifique a URL e o token.</p>
+    <p id="l-conn" class="conn-status"></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">⬡ VALHALLA</div>
+    <div class="nav-item active" onclick="goPage('dashboard',this)"><span class="nav-icon">◈</span> Dashboard</div>
+    <div class="nav-item" onclick="goPage('keys',this)"><span class="nav-icon">⊞</span> Keys</div>
+    <div class="nav-item" onclick="goPage('generate',this)"><span class="nav-icon">+</span> Gerar Key</div>
+    <div class="nav-item" onclick="goPage('validate',this)"><span class="nav-icon">✓</span> Validar</div>
+    <div class="nav-item" onclick="goPage('api',this)"><span class="nav-icon">{ }</span> API Docs</div>
+    <div class="nav-item" onclick="goPage('sdk',this)"><span class="nav-icon">⌗</span> Integração Script</div>
+    <div class="sidebar-footer">
+      <div class="api-pill" id="sb-apiurl"></div>
+      <div class="admin-badge">⬡ ADMINISTRATOR</div>
+      <button class="btn-logout" onclick="doLogout()">Desconectar</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub">Visão geral do sistema de licenças — dados em tempo real da API</div>
+      <div class="stats-grid">
+        <div class="stat-card c-cyan"><div class="stat-label">Total de Keys</div><div class="stat-value" id="stat-total">—</div><div class="stat-change">Todas geradas</div></div>
+        <div class="stat-card c-green"><div class="stat-label">Keys Ativas</div><div class="stat-value" id="stat-active">—</div><div class="stat-change">Em uso agora</div></div>
+        <div class="stat-card c-red"><div class="stat-label">Expiradas</div><div class="stat-value" id="stat-expired">—</div><div class="stat-change">Inativas</div></div>
+        <div class="stat-card c-purple"><div class="stat-label">Banidas</div><div class="stat-value" id="stat-banned">—</div><div class="stat-change">Bloqueadas</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Atividade Recente</div>
+          <button class="btn-sm" onclick="refreshAll()">↻ Atualizar</button>
+        </div>
+        <table>
+          <thead><tr><th>Key</th><th>User ID</th><th>Plano</th><th>Expira</th><th>Status</th></tr></thead>
+          <tbody id="dash-tbody"><tr><td colspan="5" class="loading-row">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- KEYS -->
+    <div class="page" id="page-keys">
+      <div class="page-title">Gerenciar Keys</div>
+      <div class="page-sub">Controle total sobre as licenças emitidas</div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Todas as Keys</div>
+          <div class="table-actions">
+            <input class="search-inp" type="text" placeholder="Buscar key..." oninput="filterKeys(this.value)" />
+            <button class="btn-sm" onclick="loadKeys()">↻ Atualizar</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Key</th><th>User ID vinculado</th><th>Plano</th><th>Nota</th><th>Expira em</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="keys-tbody"><tr><td colspan="7" class="loading-row">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- GERAR -->
+    <div class="page" id="page-generate">
+      <div class="page-title">Gerar Nova Key</div>
+      <div class="page-sub">Cria a key direto na API — aparece automaticamente no script Lua</div>
+      <div class="validate-box" style="max-width:600px">
+        <div class="form-row">
+          <label class="form-label">PLANO / TIPO</label>
+          <select class="form-inp" id="g-plan">
+            <option value="Basic">Basic — 30 dias</option>
+            <option value="Pro">Pro — 90 dias</option>
+            <option value="Ultimate">Ultimate — 365 dias</option>
+            <option value="Lifetime">Lifetime — Vitalício</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">NOTA INTERNA (não exibida ao usuário)</label>
+          <input class="form-inp" type="text" id="g-note" placeholder="Ex: Cliente VIP #123" />
+        </div>
+        <button class="btn-sm" style="width:100%;padding:13px;font-size:13px;margin-top:8px" onclick="generateKey()">⊞ GERAR KEY AGORA</button>
+        <div id="gen-result" style="display:none;margin-top:20px">
+          <div class="form-label" style="margin-bottom:8px">✓ Key gerada com sucesso:</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div class="form-inp mono" id="gen-key-display" style="background:var(--bg);color:var(--accent);flex:1;padding:12px"></div>
+            <button class="btn-sm" onclick="copyKey()">Copiar</button>
+          </div>
+          <p style="color:var(--accent3);font-size:12px;margin-top:10px;font-family:'JetBrains Mono',monospace;">✓ Key já disponível no script automaticamente</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- VALIDAR -->
+    <div class="page" id="page-validate">
+      <div class="page-title">Validar Key</div>
+      <div class="page-sub">Testa a validação real contra a API</div>
+      <div class="validate-box">
+        <div class="form-row">
+          <label class="form-label">CHAVE DE LICENÇA</label>
+          <input class="form-inp" type="text" id="v-key" placeholder="VLH-XXXX-XXXX-XXXX-XXXX" />
+        </div>
+        <div class="form-row">
+          <label class="form-label">USER ID (opcional)</label>
+          <input class="form-inp" type="text" id="v-userid" placeholder="Ex: 123456789" />
+        </div>
+        <button class="btn-sm" style="width:100%;padding:13px;font-size:13px" onclick="validateKey()">✓ VALIDAR AGORA</button>
+      </div>
+      <div class="validate-result" id="v-result">
+        <div class="vr-row"><span class="vr-label">STATUS</span><span class="vr-val" id="vr-status"></span></div>
+        <div class="vr-row"><span class="vr-label">PLANO</span><span class="vr-val" id="vr-plan"></span></div>
+        <div class="vr-row"><span class="vr-label">EXPIRA EM</span><span class="vr-val" id="vr-exp"></span></div>
+        <div class="vr-row"><span class="vr-label">MENSAGEM</span><span class="vr-val" id="vr-reason"></span></div>
+      </div>
+    </div>
+
+    <!-- API DOCS -->
+    <div class="page" id="page-api">
+      <div class="page-title">API Docs</div>
+      <div class="page-sub">Referência completa das rotas disponíveis</div>
+      <div class="api-card">
+        <div class="api-endpoint"><span class="method get">GET</span><span class="endpoint-url" id="doc-keys-url">/keys</span></div>
+        <div class="api-desc">Rota pública — retorna todas as keys ativas em texto puro (uma por linha). É essa URL que o script Lua usa.</div>
+        <div class="code-block" id="doc-keys-example">https://valhalla-api.up.railway.app/keys</div>
+      </div>
+      <div class="api-card">
+        <div class="api-endpoint"><span class="method get">GET</span><span class="endpoint-url" id="doc-validate-url">/validate?key=...&userid=...</span></div>
+        <div class="api-desc">Valida uma key. Vincula o userid ao primeiro uso. Retorna JSON com valid, plan, expires_at.</div>
+        <div class="code-block">{
+  "valid": true,
+  "plan": "Pro",
+  "expires_at": "2026-12-31",
+  "message": "OK"
+}</div>
+      </div>
+      <div class="api-card">
+        <div class="api-endpoint"><span class="method post">POST</span><span class="endpoint-url">/generate</span></div>
+        <div class="api-desc">Gera uma nova key. Requer header x-admin-token.</div>
+        <div class="code-block" id="doc-gen-example">curl -X POST https://valhalla-api.up.railway.app/generate \
+  -H "x-admin-token: SEU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"plan":"Pro","note":"Cliente VIP"}'</div>
+      </div>
+      <div class="api-card">
+        <div class="api-endpoint"><span class="method post">POST</span><span class="endpoint-url">/ban</span></div>
+        <div class="api-desc">Bane uma key imediatamente. Na próxima validação do script, o usuário é barrado.</div>
+        <div class="code-block" id="doc-ban-example">curl -X POST https://valhalla-api.up.railway.app/ban \
+  -H "x-admin-token: SEU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"key":"VLH-XXXX-XXXX-XXXX-0001"}'</div>
+      </div>
+      <div class="api-card">
+        <div class="api-endpoint"><span class="method post">POST</span><span class="endpoint-url">/reset</span></div>
+        <div class="api-desc">Desvincula o userid de uma key, permitindo que outro usuário a use.</div>
+      </div>
+    </div>
+
+    <!-- INTEGRAÇÃO SCRIPT -->
+    <div class="page" id="page-sdk">
+      <div class="page-title">Integração no Script</div>
+      <div class="page-sub">Código Lua pronto — já com a URL da sua API preenchida</div>
+      <div class="api-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600">script.lua — cole no seu executor</div>
+          <button class="btn-sm success" onclick="copySDK()">Copiar código</button>
+        </div>
+        <div class="api-desc">Esse script busca as keys ativas direto da sua API Railway. Quando você gerar uma key nova no painel, ela funciona automaticamente — sem precisar mexer aqui.</div>
+        <div class="code-block" id="sdk-code" style="color:#c4b5fd;white-space:pre;overflow-x:auto"></div>
+      </div>
+      <div class="api-card">
+        <div style="font-size:13px;font-weight:600;margin-bottom:12px">Como funciona</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;border:1px solid var(--border)">
+            <div style="color:var(--accent);font-size:11px;font-family:'JetBrains Mono',monospace;margin-bottom:8px">FLUXO NORMAL</div>
+            <div style="color:var(--text2);font-size:12px;line-height:2">1. Usuário digita a key<br>2. Script busca keys ativas na API<br>3. Valida localmente<br>4. Script executa</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;border:1px solid var(--border)">
+            <div style="color:var(--danger);font-size:11px;font-family:'JetBrains Mono',monospace;margin-bottom:8px">KEY INVÁLIDA / BANIDA</div>
+            <div style="color:var(--text2);font-size:12px;line-height:2">Key não encontrada → Encerra<br>Key expirada → Encerra<br>Key banida → Encerra<br>API offline → Encerra</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div class="modal-bg" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">Editar Key</div>
+    <div class="form-row">
+      <label class="form-label">KEY</label>
+      <input class="form-inp mono" id="edit-key" readonly style="opacity:0.6" />
+    </div>
+    <div class="form-row">
+      <label class="form-label">STATUS</label>
+      <select class="form-inp" id="edit-status">
+        <option value="active">Ativa</option>
+        <option value="expired">Expirada</option>
+        <option value="banned">Banida</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-confirm" onclick="saveEdit()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="notif" id="notif"></div>
+
+<script>
+let API_URL = '';
+let ADMIN_TOKEN = '';
+let allKeys = [];
+let editKey = '';
+
+// ── LOGIN ──────────────────────────────────────
+async function doLogin() {
+  const url = document.getElementById('l-apiurl').value.trim().replace(/\/$/, '');
+  const token = document.getElementById('l-token').value.trim();
+  const conn = document.getElementById('l-conn');
+  const err = document.getElementById('l-err');
+
+  if (!url || !token) { err.style.display = 'block'; err.textContent = 'Preencha a URL e o token.'; return; }
+
+  conn.className = 'conn-status conn-checking';
+  conn.textContent = 'Conectando...';
+  err.style.display = 'none';
+
+  try {
+    const res = await fetch(`${url}/admin/keys`, { headers: { 'x-admin-token': token } });
+    if (!res.ok) throw new Error('Token inválido');
+
+    API_URL = url;
+    ADMIN_TOKEN = token;
+
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('sb-apiurl').textContent = API_URL.replace('https://', '');
+
+    updateSDKCode();
+    updateAPIDocUrls();
+    await refreshAll();
+  } catch(e) {
+    conn.className = 'conn-status conn-err';
+    conn.textContent = 'Erro: ' + e.message;
+    err.style.display = 'block';
+    err.textContent = 'Não foi possível conectar. Verifique a URL e o token.';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('l-token').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+});
+
+function doLogout() {
+  API_URL = ''; ADMIN_TOKEN = ''; allKeys = [];
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('l-conn').textContent = '';
+}
+
+// ── NAVEGAÇÃO ──────────────────────────────────
+function goPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
+  if (id === 'dashboard') refreshAll();
+  if (id === 'keys') loadKeys();
+}
+
+// ── API HELPERS ────────────────────────────────
+async function apiGet(path) {
+  const res = await fetch(API_URL + path, { headers: { 'x-admin-token': ADMIN_TOKEN } });
+  return res.json();
+}
+
+async function apiPost(path, body) {
+  const res = await fetch(API_URL + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN },
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+// ── REFRESH ────────────────────────────────────
+async function refreshAll() {
+  await loadKeys();
+  updateStats();
+  renderDashTable();
+}
+
+async function loadKeys() {
+  try {
+    allKeys = await apiGet('/admin/keys');
+    updateStats();
+    renderKeysTable(allKeys);
+  } catch(e) {
+    notify('Erro ao carregar keys da API', 'err');
+  }
+}
+
+function updateStats() {
+  document.getElementById('stat-total').textContent = allKeys.length;
+  document.getElementById('stat-active').textContent = allKeys.filter(k=>k.status==='active' && new Date(k.expires)>new Date()).length;
+  document.getElementById('stat-expired').textContent = allKeys.filter(k=>k.status==='expired'||new Date(k.expires)<new Date()).length;
+  document.getElementById('stat-banned').textContent = allKeys.filter(k=>k.status==='banned').length;
+}
+
+function badge(k) {
+  if (k.status === 'banned') return '<span class="badge banned">Banida</span>';
+  if (k.status === 'expired' || new Date(k.expires) < new Date()) return '<span class="badge expired">Expirada</span>';
+  return '<span class="badge active">Ativa</span>';
+}
+
+function renderDashTable() {
+  const tbody = document.getElementById('dash-tbody');
+  if (!allKeys.length) { tbody.innerHTML = '<tr><td colspan="5" class="loading-row">Nenhuma key ainda</td></tr>'; return; }
+  tbody.innerHTML = [...allKeys].reverse().slice(0,6).map(k => `
+    <tr>
+      <td class="mono">${k.key}</td>
+      <td style="font-size:12px;color:var(--text2)">${k.userid||'—'}</td>
+      <td style="font-size:12px">${k.plan}</td>
+      <td style="font-size:12px;color:var(--text2)">${k.expires}</td>
+      <td>${badge(k)}</td>
+    </tr>`).join('');
+}
+
+function renderKeysTable(list) {
+  const tbody = document.getElementById('keys-tbody');
+  if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" class="loading-row">Nenhuma key encontrada</td></tr>'; return; }
+  tbody.innerHTML = list.map(k => `
+    <tr>
+      <td class="mono">${k.key}</td>
+      <td style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace">${k.userid||'—'}</td>
+      <td style="font-size:12px">${k.plan}</td>
+      <td style="font-size:12px;color:var(--text3)">${k.note||'—'}</td>
+      <td style="font-size:12px;color:var(--text2)">${k.expires}</td>
+      <td>${badge(k)}</td>
+      <td>
+        <div class="td-actions">
+          <button class="btn-sm success" onclick="copyToClip('${k.key}')">Copiar</button>
+          <button class="btn-sm warn" onclick="resetKey('${k.key}')">Reset User</button>
+          <button class="btn-sm danger" onclick="banKey('${k.key}')">Banir</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function filterKeys(q) {
+  const filtered = allKeys.filter(k => k.key.toLowerCase().includes(q.toLowerCase()) || (k.note||'').toLowerCase().includes(q.toLowerCase()));
+  renderKeysTable(filtered);
+}
+
+// ── GERAR KEY ──────────────────────────────────
+async function generateKey() {
+  const plan = document.getElementById('g-plan').value;
+  const note = document.getElementById('g-note').value.trim();
+  try {
+    const data = await apiPost('/generate', { plan, note });
+    if (data.key) {
+      document.getElementById('gen-key-display').textContent = data.key;
+      document.getElementById('gen-result').style.display = 'block';
+      notify('Key gerada com sucesso!', 'ok');
+      await loadKeys();
+    } else {
+      notify('Erro ao gerar key', 'err');
+    }
+  } catch(e) {
+    notify('Erro na API: ' + e.message, 'err');
+  }
+}
+
+function copyKey() { copyToClip(document.getElementById('gen-key-display').textContent); }
+
+// ── BANIR / RESET ──────────────────────────────
+async function banKey(key) {
+  if (!confirm(`Banir a key ${key}?`)) return;
+  try {
+    await apiPost('/ban', { key });
+    notify('Key banida.', 'err');
+    await loadKeys();
+  } catch(e) { notify('Erro ao banir', 'err'); }
+}
+
+async function resetKey(key) {
+  if (!confirm(`Desvincular usuário da key ${key}?\nEla poderá ser usada por outra pessoa.`)) return;
+  try {
+    await apiPost('/reset', { key });
+    notify('Usuário desvinculado!', 'ok');
+    await loadKeys();
+  } catch(e) { notify('Erro ao resetar', 'err'); }
+}
+
+// ── VALIDAR ────────────────────────────────────
+async function validateKey() {
+  const key = document.getElementById('v-key').value.trim();
+  const userid = document.getElementById('v-userid').value.trim();
+  if (!key) { notify('Digite uma key', 'warn'); return; }
+  try {
+    const data = await fetch(`${API_URL}/validate?key=${encodeURIComponent(key)}&userid=${userid}`).then(r=>r.json());
+    const res = document.getElementById('v-result');
+    res.style.display = 'block';
+    document.getElementById('vr-status').textContent = data.valid ? '✓ VÁLIDA' : '✗ INVÁLIDA';
+    document.getElementById('vr-status').style.color = data.valid ? 'var(--accent3)' : 'var(--danger)';
+    document.getElementById('vr-plan').textContent = data.plan || '—';
+    document.getElementById('vr-exp').textContent = data.expires_at || '—';
+    document.getElementById('vr-reason').textContent = data.message || '—';
+  } catch(e) { notify('Erro ao validar: ' + e.message, 'err'); }
+}
+
+// ── SDK CODE ───────────────────────────────────
+function updateSDKCode() {
+  const url = API_URL || 'https://valhalla-api.up.railway.app';
+  const code = `local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local VirtualUser = game:GetService("VirtualUser")
+
+local player = Players.LocalPlayer
+
+-- SOUND PROTECTOR
+for _,v in pairs(game:GetDescendants()) do
+    if v:IsA("Sound") then
+        if v.SoundId == nil or v.SoundId == "" then
+            v.SoundId = "rbxassetid://0"
+        end
+    end
+end
+game.DescendantAdded:Connect(function(v)
+    if v:IsA("Sound") then
+        task.wait()
+        if v.SoundId == nil or v.SoundId == "" then
+            v.SoundId = "rbxassetid://0"
+        end
+    end
+end)
+
+-- BUSCA KEYS ATIVAS DA API (automático)
+local KEYS_URL = "${url}/keys"
+local keysValidas = {}
+
+local ok, resultado = pcall(function()
+    local raw = game:HttpGet(KEYS_URL)
+    for linha in raw:gmatch("[^\\r\\n]+") do
+        local key = linha:match("^%s*(.-)%s*$")
+        if key ~= "" then
+            table.insert(keysValidas, key)
+        end
+    end
+end)
+
+if not ok or #keysValidas == 0 then
+    keysValidas = {"ERRO-API-OFFLINE"}
+end
+
+-- WINDOW
+local Window = Rayfield:CreateWindow({
+   Name = "Valhalla Hub",
+   LoadingTitle = "Valhalla Loading",
+   LoadingSubtitle = "by Val'd",
+   Theme = "Ocean",
+   ToggleUIKeybind = "F8",
+   ConfigurationSaving = {
+      Enabled = true,
+      FileName = "Valhalla Hub"
+   },
+   KeySystem = true,
+   KeySettings = {
+      Title = "Val'd Keys",
+      Subtitle = "Key System",
+      Note = "Pegue a key com o Valhalla",
+      FileName = "Key",
+      SaveKey = true,
+      Key = keysValidas
+   }
+})
+
+local Tab = Window:CreateTab("Valhalla Hub", 4483362458)
+
+-- AUTO REWARD
+local isRunning = false
+local currentId = 1
+Tab:CreateToggle({
+   Name = "Auto Rewards",
+   CurrentValue = false,
+   Callback = function(Value)
+      isRunning = Value
+      if isRunning then
+         local ClaimReward = ReplicatedStorage
+            :WaitForChild("Packages"):WaitForChild("_Index")
+            :WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit")
+            :WaitForChild("Services"):WaitForChild("ChallengeService")
+            :WaitForChild("RF"):WaitForChild("ClaimReward")
+         task.spawn(function()
+            while isRunning do
+               pcall(function() ClaimReward:InvokeServer(currentId) end)
+               currentId += 1
+               task.wait(0.5)
+            end
+         end)
+      end
+   end
+})
+
+-- FPS BOOST
+Tab:CreateToggle({
+   Name = "FPS Boost + Anti Texture",
+   CurrentValue = false,
+   Callback = function(Value)
+      if Value then
+         for _,v in pairs(game:GetDescendants()) do
+            if v:IsA("Texture") or v:IsA("Decal") then v:Destroy() end
+            if v:IsA("ParticleEmitter") or v:IsA("Trail") then v:Destroy() end
+            if v:IsA("BasePart") then v.Material = Enum.Material.Plastic; v.Reflectance = 0 end
+         end
+         game.Lighting.GlobalShadows = false
+         game.Lighting.FogEnd = 100000
+         settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+      end
+   end
+})
+
+-- REMOVE TEXTURES
+Tab:CreateButton({
+   Name = "Remove Textures",
+   Callback = function()
+      for _,obj in pairs(game:GetDescendants()) do
+         if obj:IsA("Texture") or obj:IsA("Decal") then obj:Destroy() end
+      end
+   end
+})
+
+-- ANTI AFK
+Tab:CreateToggle({
+   Name = "Anti AFK",
+   CurrentValue = false,
+   Callback = function(Value)
+      if Value then
+         player.Idled:Connect(function()
+            VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+            task.wait(1)
+            VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+         end)
+      end
+   end
+})
+
+-- AUTO RECONNECT
+Tab:CreateButton({
+   Name = "Auto Reconnect",
+   Callback = function()
+      player.OnTeleport:Connect(function(State)
+         if State == Enum.TeleportState.Failed then
+            TeleportService:Teleport(game.PlaceId, player)
+         end
+      end)
+   end
+})`;
+  document.getElementById('sdk-code').textContent = code;
+}
+
+function updateAPIDocUrls() {
+  const base = API_URL || 'https://valhalla-api.up.railway.app';
+  const el = document.getElementById('doc-keys-example');
+  if (el) el.textContent = base + '/keys';
+  const el2 = document.getElementById('doc-gen-example');
+  if (el2) el2.textContent = `curl -X POST ${base}/generate \\\n  -H "x-admin-token: SEU_TOKEN" \\\n  -H "Content-Type: application/json" \\\n  -d '{"plan":"Pro","note":"Cliente VIP"}'`;
+  const el3 = document.getElementById('doc-ban-example');
+  if (el3) el3.textContent = `curl -X POST ${base}/ban \\\n  -H "x-admin-token: SEU_TOKEN" \\\n  -H "Content-Type: application/json" \\\n  -d '{"key":"VLH-XXXX-XXXX-XXXX-0001"}'`;
+}
+
+// ── MODAL (não usado mais, mas mantido para edições futuras) ──
+function openEdit(key) { editKey = key; document.getElementById('edit-modal').classList.add('open'); }
+function closeModal() { document.getElementById('edit-modal').classList.remove('open'); editKey = ''; }
+async function saveEdit() {
+  const status = document.getElementById('edit-status').value;
+  if (status === 'banned') await banKey(editKey);
+  closeModal();
+}
+
+// ── UTILITÁRIOS ────────────────────────────────
+function copyToClip(text) { navigator.clipboard.writeText(text).then(() => notify('Copiado!', 'ok')); }
+function copySDK() { copyToClip(document.getElementById('sdk-code').textContent); }
+
+function notify(msg, type='ok') {
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.className = `notif ${type} show`;
+  setTimeout(() => n.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
