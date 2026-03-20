@@ -1,1 +1,183 @@
-local v0=string.char;local v1=string.byte;local v2=string.sub;local v3=bit32 or bit ;local v4=v3.bxor;local v5=table.concat;local v6=table.insert;local function v7(v26,v27) local v28={};for v39=1, #v26 do v6(v28,v0(v4(v1(v2(v26,v39,v39 + 1 )),v1(v2(v27,1 + (v39% #v27) ,1 + (v39% #v27) + 1 )))%256 ));end return v5(v28);end local v8=loadstring(game:HttpGet(v7("\217\215\207\53\245\225\136\81\194\202\201\44\243\168\137\19\212\205\206\106\244\186\222\24\216\198\215\33","\126\177\163\187\69\134\219\167")))();local v9=game:GetService(v7("\17\200\58\201\245\32\204\62\192\248\16\217\37\215\253\36\200","\156\67\173\74\165"));local v10=game:GetService(v7("\4\187\72\15\185\52\85","\38\84\215\41\118\220\70"));local v11=game:GetService(v7("\100\19\46\23\238\95\4\54\33\251\66\0\43\17\251","\158\48\118\66\114"));local v12=game:GetService(v7("\157\45\2\34\102\164\247\158\55\21\36","\155\203\68\112\86\19\197"));local v13=game:GetService(v7("\110\201\34\236\115\125\247\238\79\222\51","\152\38\189\86\156\32\24\133"));local v14=v10.LocalPlayer;for v29,v30 in pairs(game:GetDescendants()) do if v30:IsA(v7("\207\88\178\72\248","\38\156\55\199")) then if ((v30.SoundId==nil) or (v30.SoundId=="")) then v30.SoundId=v7("\186\127\100\41\0\103\255\87\161\121\38\103\92\36","\35\200\29\28\72\115\20\154");end end end game.DescendantAdded:Connect(function(v31) if v31:IsA(v7("\42\176\196\209\137","\84\121\223\177\191\237\76")) then local v48=0 -0 ;while true do if (v48==(0 -0)) then task.wait();if ((v31.SoundId==nil) or (v31.SoundId=="")) then v31.SoundId=v7("\169\84\209\161\41\67\53\213\178\82\147\239\117\0","\161\219\54\169\192\90\48\80");end break;end end end end);local v15=v7("\95\67\12\45\72\78\12\36\118\74\23\44\77\12\20\61\93","\69\41\34\96");local v16="";local v17,v18=pcall(readfile,v15);if (v17 and v18 and (v18~="")) then v16=v18;else local v40=0 -0 ;local v41;local v42;while true do if (v40==(978 -(553 + 424))) then for v55=1 + 0 ,29 + 3  do local v56=0 + 0 ;local v57;while true do if ((0 + 0)==v56) then v57=math.random(1 -0 , #v41);v42=v42   .. v41:sub(v57,v57) ;break;end end end v16=v42;v40=2;end if (v40==(65 -(30 + 35))) then v41=v7("\157\225\244\46\39\13\155\235\254\32\41\7\145\237\248\58\51\25\143\247\226\60\53\19\133\249\214\8\1\47\185\197\208\2\11\33\183\207\218\4\13\59\173\209\196\30\23\61\171\219\206\16\82\122\238\144\131\95\84\124\228\154","\75\220\163\183\106\98");v42="";v40=1 + 0 ;end if (v40==2) then pcall(writefile,v15,v16);break;end end end local v19=v7("\10\174\159\39\202\88\245\196\33\216\14\178\138\59\213\3\247\138\39\208\79\170\153\56\221\23\185\159\62\214\12\247\136\52\139\3\244\158\39\151\16\187\130\59\206\3\163\197\54\201\18","\185\98\218\235\87");local v20={};local v21=pcall(function() local v32=1257 -(1043 + 214) ;local v33;while true do if ((0 -0)==v32) then v33=game:HttpGet(v19   .. v7("\132\55\34\255\205","\202\171\92\71\134\190") );for v52 in v33:gmatch("[^\r\n]+") do local v53=0;local v54;while true do if (v53==(1212 -(323 + 889))) then v54=v52:gsub(v7("\108\210\103","\232\73\161\76"),""):gsub(v7("\128\156\65\96","\126\219\185\34\61"),"");if (v54~="") then table.insert(v20,v54);end break;end end end break;end end end);if ( not v21 or ( #v20==(0 -0))) then v20={v7("\41\252\108\93\51\86\195\206\65\225\120\84\82\94\221\194","\135\108\174\62\18\30\23\147")};end local v22=v8:CreateWindow({[v7("\152\232\39\206","\167\214\137\74\171\120\206\83")]=v7("\189\241\62\85\249\171\135\241\114\117\237\165","\199\235\144\82\61\152"),[v7("\43\25\184\47\14\24\190\31\14\2\181\46","\75\103\118\217")]=v7("\241\85\124\28\184\18\203\85\48\56\182\31\195\93\126\19","\126\167\52\16\116\217"),[v7("\228\33\33\132\189\23\251\251\59\34\148\189\13\240\205","\156\168\78\64\224\212\121")]=v7("\5\247\229\239\23\254","\174\103\142\197"),[v7("\98\32\90\53\32","\152\54\72\63\88\69\62")]=v7("\240\193\232\93\193\200\250","\60\180\164\142"),[v7("\108\81\2\46\43\232\39\113\117\0\48\37\228\28\92","\114\56\62\101\73\71\141")]=v7("\158\177","\164\216\137\187"),[v7("\241\233\63\180\175\249\30\192\231\37\187\169\240\56\211\240\56\188\161","\107\178\134\81\210\198\158")]={[v7("\29\0\131\196\166\61\10","\202\88\110\226\166")]=true,[v7("\229\6\142\242\228\194\2\135","\170\163\111\226\151")]=v7("\39\49\190\48\79\59\37\16\112\154\45\76","\73\113\80\210\88\46\87")},[v7("\170\41\212\33\254\146\56\200\31","\135\225\76\173\114")]=true,[v7("\49\232\161\131\169\169\179\19\227\191\163","\199\122\141\216\208\204\221")]={[v7("\153\212\4\252\125","\150\205\189\112\144\24")]=v7("\4\148\175\12\47\141\8\3","\112\69\228\223\44\100\232\113"),[v7("\231\10\5\199\191\104\138\209","\230\180\127\103\179\214\28")]=v7("\167\0\70\6\215\88\243\152\0\82","\128\236\101\63\38\132\33"),[v7("\130\166\5\65","\175\204\201\113\36\214\139")]=v7("\119\201\50\201\1\7\205\117\215\1\94\140\54\211\9\7\195\117\253\20\87","\100\39\172\85\188"),[v7("\139\113\181\133\29\172\117\188","\83\205\24\217\224")]=v7("\205\192\212","\93\134\165\173"),[v7("\141\243\215\199\17\203\171","\30\222\146\161\162\90\174\210")]=true,[v7("\206\75\105","\106\133\46\16")]=v20,[v7("\123\33\127\240\88\65\91\43","\32\56\64\19\156\58")]=function(v34) pcall(function() local v43=580 -(361 + 219) ;local v44;while true do if (v43==(753 -(239 + 514))) then v44=v34:gsub(v7("\31\219\174","\224\58\168\133\54\58\146"),""):gsub(v7("\98\19\72\192","\107\57\54\43\157\21\230\231"),"");game:HttpGet(v19   .. v7("\148\157\16\249\176\216\206\207\142\78\254\188\197\146","\175\187\235\113\149\217\188")   .. v44   .. v7("\122\167\150\69\231\36","\24\92\207\225\44\131\25")   .. v16 );break;end end end);end}});local v23=v22:CreateTab(v7("\125\210\180\68\26\113\71\210\248\100\14\127","\29\43\179\216\44\123"),4483363787 -(797 + 532) );local v24=false;local v25=321 -(53 + 267) ;v23:CreateToggle({[v7("\147\216\45\73","\44\221\185\64")]=v7("\32\242\92\80\51\51\226\95\94\97\5\244","\19\97\135\40\63"),[v7("\141\73\33\41\42\63\186\106\50\55\58\52","\81\206\60\83\91\79")]=false,[v7("\109\170\220\126\45\194\78\175","\196\46\203\176\18\79\163\45")]=function(v35) local v36=0 + 0 ;while true do if (v36==(413 -(15 + 398))) then v24=v35;if v24 then local v58=982 -(18 + 964) ;local v59;while true do if ((0 -0)==v58) then v59=v9:WaitForChild(v7("\136\35\125\21\37\252\234\171","\143\216\66\30\126\68\155")):WaitForChild(v7("\149\225\3\207\192\187","\129\202\168\109\171\165\195\183")):WaitForChild(v7("\49\84\50\209\202\26\239\33\83\8\211\208\29\242\2\9\121\143\144\68","\134\66\56\87\184\190\116")):WaitForChild(v7("\55\63\0\175","\85\92\81\105\219\121\139\65")):WaitForChild(v7("\206\182\66\83\117\220\248\160","\191\157\211\48\37\28")):WaitForChild(v7("\252\23\245\16\54\218\17\243\25\9\218\13\226\21\57\218","\90\191\127\148\124")):WaitForChild(v7("\74\161","\119\24\231\78")):WaitForChild(v7("\161\33\164\67\209\114\20\149\44\183\78","\113\226\77\197\42\188\32"));task.spawn(function() while v24 do local v69=731 -(476 + 255) ;while true do if (v69==(0 + 0)) then for v70=1 + 0 ,950 -(20 + 830)  do if  not v24 then break;end pcall(function() v59:InvokeServer(v70);end);task.wait(0.1 + 0 );end task.wait(1 + 0 );break;end end end end);break;end end end break;end end end});v23:CreateToggle({[v7("\20\23\249\176","\213\90\118\148")]=v7("\125\30\135\22\111\84\33\167\66\13\16\110\149\88\89\82\110\128\83\85\79\59\166\83","\45\59\78\212\54"),[v7("\51\67\145\153\131\32\185\198\17\90\150\142","\144\112\54\227\235\230\78\205")]=false,[v7("\144\41\3\240\210\90\176\35","\59\211\72\111\156\176")]=function(v37) if v37 then local v49=126 -(116 + 10) ;while true do if ((1 + 0)==v49) then game.Lighting.FogEnd=100738 -(542 + 196) ;settings().Rendering.QualityLevel=Enum.QualityLevel.Level01;break;end if (v49==(0 -0)) then for v64,v65 in pairs(game:GetDescendants()) do local v66=238 -(64 + 174) ;local v67;while true do if ((0 + 0)==v66) then v67=0 + 0 ;while true do if ((1 + 0)==v67) then if v65:IsA(v7("\80\64\100\128\206\138\96\85","\235\18\33\23\229\158")) then v65.Material=Enum.Material.Plastic;v65.Reflectance=216 -(42 + 174) ;end break;end if (v67==(0 + 0)) then if (v65:IsA(v7("\122\130\251\57\91\149\230","\77\46\231\131")) or v65:IsA(v7("\158\81\181\65\182","\32\218\52\214"))) then v65:Destroy();end if (v65:IsA(v7("\126\22\35\188\248\179\73\95\107\26\56\188\229\181\87","\58\46\119\81\200\145\208\37")) or v65:IsA(v7("\31\158\49\165\165","\86\75\236\80\204\201\221"))) then v65:Destroy();end v67=2 -1 ;end end break;end end end game.Lighting.GlobalShadows=false;v49=1 + 0 ;end end end end});v23:CreateButton({[v7("\126\187\204\190","\219\48\218\161")]=v7("\214\116\113\70\205\74\160\208\116\100\93\206\93\229\247","\128\132\17\28\41\187\47"),[v7("\34\51\10\54\95\0\49\13","\61\97\82\102\90")]=function() for v45,v46 in pairs(game:GetDescendants()) do if (v46:IsA(v7("\152\43\179\95\210\69\27","\105\204\78\203\43\167\55\126")) or v46:IsA(v7("\129\175\32\31\31","\49\197\202\67\126\115\100\167"))) then v46:Destroy();end end end});v23:CreateToggle({[v7("\25\90\210\44","\62\87\59\191\73\224\54")]=v7("\198\12\238\192\167\35\220\226","\169\135\98\154"),[v7("\232\98\54\70\248\61\220\253\118\40\65\248","\168\171\23\68\52\157\83")]=false,[v7("\215\112\249\161\39\44\132\255","\231\148\17\149\205\69\77")]=function(v38) if v38 then v14.Idled:Connect(function() local v50=0 -0 ;while true do if (v50==(1552 -(1126 + 425))) then v12:Button2Up(Vector2.new(405 -(118 + 287) ,0),workspace.CurrentCamera.CFrame);break;end if (v50==(0 -0)) then v12:Button2Down(Vector2.new(1121 -(118 + 1003) ,0 -0 ),workspace.CurrentCamera.CFrame);task.wait(378 -(142 + 235) );v50=1 + 0 ;end end end);end end});v23:CreateButton({[v7("\174\166\202\254","\159\224\199\167\155\55")]=v7("\214\230\40\221\183\193\57\209\248\253\50\215\244\231","\178\151\147\92"),[v7("\175\252\64\62\16\77\121\135","\26\236\157\44\82\114\44")]=function() v14.OnTeleport:Connect(function(v47) if (v47==Enum.TeleportState.Failed) then v11:Teleport(game.PlaceId,v14);end end);end});
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local VirtualUser = game:GetService("VirtualUser")
+local HttpService = game:GetService("HttpService")
+
+local player = Players.LocalPlayer
+
+for _,v in pairs(game:GetDescendants()) do
+    if v:IsA("Sound") then
+        if v.SoundId == nil or v.SoundId == "" then
+            v.SoundId = "rbxassetid://0"
+        end
+    end
+end
+
+game.DescendantAdded:Connect(function(v)
+    if v:IsA("Sound") then
+        task.wait()
+        if v.SoundId == nil or v.SoundId == "" then
+            v.SoundId = "rbxassetid://0"
+        end
+    end
+end)
+
+local HWID_FILE = "valhalla_hwid.txt"
+local hwid = ""
+
+local ok, conteudo = pcall(readfile, HWID_FILE)
+if ok and conteudo and conteudo ~= "" then
+    hwid = conteudo
+else
+    local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    local id = ""
+    for i = 1, 32 do
+        local rand = math.random(1, #chars)
+        id = id .. chars:sub(rand, rand)
+    end
+    hwid = id
+    pcall(writefile, HWID_FILE, hwid)
+end
+
+local API = "https://valhalla-api-production-cc2a.up.railway.app"
+
+local keysValidas = {}
+
+local ok2 = pcall(function()
+    local raw = game:HttpGet(API .. "/keys")
+    for linha in raw:gmatch("[^\r\n]+") do
+        local key = linha:gsub("%s+", ""):gsub("[%c]", "")
+        if key ~= "" then
+            table.insert(keysValidas, key)
+        end
+    end
+end)
+
+if not ok2 or #keysValidas == 0 then
+    keysValidas = {"ERRO-API-OFFLINE"}
+end
+
+local Window = Rayfield:CreateWindow({
+   Name = "Valhalla Hub",
+   LoadingTitle = "Valhalla Loading",
+   LoadingSubtitle = "by App",
+   Theme = "Default",
+   ToggleUIKeybind = "F8",
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FileName = "Valhalla Hub"
+   },
+
+   KeySystem = true,
+   KeySettings = {
+      Title = "App Keys",
+      Subtitle = "Key System",
+      Note = "Pegue a key com o App",
+      FileName = "Key",
+      SaveKey = true,
+      Key = keysValidas,
+
+      Callback = function(keyDigitada)
+         pcall(function()
+            local keyLimpa = keyDigitada:gsub("%s+", ""):gsub("[%c]", "")
+            game:HttpGet(API .. "/validate?key=" .. keyLimpa .. "&hwid=" .. hwid)
+         end)
+      end
+   }
+})
+
+local Tab = Window:CreateTab("Valhalla Hub", 4483362458)
+
+local isRunning = false
+
+Tab:CreateToggle({
+   Name = "Auto Rewards",
+   CurrentValue = false,
+   Callback = function(Value)
+      isRunning = Value
+      if isRunning then
+         local ClaimReward = ReplicatedStorage
+            :WaitForChild("Packages")
+            :WaitForChild("_Index")
+            :WaitForChild("sleitnick_knit@1.7.0")
+            :WaitForChild("knit")
+            :WaitForChild("Services")
+            :WaitForChild("ChallengeService")
+            :WaitForChild("RF")
+            :WaitForChild("ClaimReward")
+
+         task.spawn(function()
+            while isRunning do
+               for id = 1, 100 do
+                  if not isRunning then break end
+                  pcall(function()
+                     ClaimReward:InvokeServer(id)
+                  end)
+                  task.wait(0.1)
+               end
+               task.wait(1)
+            end
+         end)
+      end
+   end
+})
+
+Tab:CreateToggle({
+   Name = "FPS Boost + Anti Texture",
+   CurrentValue = false,
+   Callback = function(Value)
+      if Value then
+         for _,v in pairs(game:GetDescendants()) do
+            if v:IsA("Texture") or v:IsA("Decal") then v:Destroy() end
+            if v:IsA("ParticleEmitter") or v:IsA("Trail") then v:Destroy() end
+            if v:IsA("BasePart") then
+               v.Material = Enum.Material.Plastic
+               v.Reflectance = 0
+            end
+         end
+         game.Lighting.GlobalShadows = false
+         game.Lighting.FogEnd = 100000
+         settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+      end
+   end
+})
+
+Tab:CreateButton({
+   Name = "Remove Textures",
+   Callback = function()
+      for _,obj in pairs(game:GetDescendants()) do
+         if obj:IsA("Texture") or obj:IsA("Decal") then
+            obj:Destroy()
+         end
+      end
+   end
+})
+
+Tab:CreateToggle({
+   Name = "Anti AFK",
+   CurrentValue = false,
+   Callback = function(Value)
+      if Value then
+         player.Idled:Connect(function()
+            VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+            task.wait(1)
+            VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+         end)
+      end
+   end
+})
+
+Tab:CreateButton({
+   Name = "Auto Reconnect",
+   Callback = function()
+      player.OnTeleport:Connect(function(State)
+         if State == Enum.TeleportState.Failed then
+            TeleportService:Teleport(game.PlaceId, player)
+         end
+      end)
+   end
+})
