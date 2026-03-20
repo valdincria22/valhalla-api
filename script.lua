@@ -1,30 +1,3 @@
-local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/UI-Interface/Rayfield/main/source.lua'))()
-
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
-local TeleportService = game:GetService("TeleportService")
-local VirtualUser = game:GetService("VirtualUser")
-local HttpService = game:GetService("HttpService")
-
-local player = Players.LocalPlayer
-
-for _,v in pairs(game:GetDescendants()) do
-    if v:IsA("Sound") then
-        if v.SoundId == nil or v.SoundId == "" then
-            v.SoundId = "rbxassetid://0"
-        end
-    end
-end
-
-game.DescendantAdded:Connect(function(v)
-    if v:IsA("Sound") then
-        task.wait()
-        if v.SoundId == nil or v.SoundId == "" then
-            v.SoundId = "rbxassetid://0"
-        end
-    end
-end)
-
 local HWID_FILE = "valhalla_hwid.txt"
 local hwid = ""
 
@@ -41,6 +14,10 @@ else
     hwid = id
     pcall(writefile, HWID_FILE, hwid)
 end
+
+--------------------------------------------------
+-- BUSCA KEYS DA API
+--------------------------------------------------
 
 local API = "https://valhalla-api-production-cc2a.up.railway.app"
 
@@ -59,6 +36,10 @@ end)
 if not ok2 or #keysValidas == 0 then
     keysValidas = {"ERRO-API-OFFLINE"}
 end
+
+--------------------------------------------------
+-- WINDOW
+--------------------------------------------------
 
 local Window = Rayfield:CreateWindow({
    Name = "Valhalla Hub",
@@ -92,7 +73,12 @@ local Window = Rayfield:CreateWindow({
 
 local Tab = Window:CreateTab("Valhalla Hub", 4483362458)
 
+--------------------------------------------------
+-- AUTO REWARD
+--------------------------------------------------
+
 local isRunning = false
+local currentId = 1
 
 Tab:CreateToggle({
    Name = "Auto Rewards",
@@ -112,19 +98,20 @@ Tab:CreateToggle({
 
          task.spawn(function()
             while isRunning do
-               for id = 1, 100 do
-                  if not isRunning then break end
-                  pcall(function()
-                     ClaimReward:InvokeServer(id)
-                  end)
-                  task.wait(0.1)
-               end
-               task.wait(1)
+               pcall(function()
+                  ClaimReward:InvokeServer(currentId)
+               end)
+               currentId += 1
+               task.wait(0.5)
             end
          end)
       end
    end
 })
+
+--------------------------------------------------
+-- FPS BOOST
+--------------------------------------------------
 
 Tab:CreateToggle({
    Name = "FPS Boost + Anti Texture",
@@ -146,6 +133,10 @@ Tab:CreateToggle({
    end
 })
 
+--------------------------------------------------
+-- REMOVE TEXTURES
+--------------------------------------------------
+
 Tab:CreateButton({
    Name = "Remove Textures",
    Callback = function()
@@ -156,6 +147,10 @@ Tab:CreateButton({
       end
    end
 })
+
+--------------------------------------------------
+-- ANTI AFK
+--------------------------------------------------
 
 Tab:CreateToggle({
    Name = "Anti AFK",
@@ -170,6 +165,10 @@ Tab:CreateToggle({
       end
    end
 })
+
+--------------------------------------------------
+-- AUTO RECONNECT
+--------------------------------------------------
 
 Tab:CreateButton({
    Name = "Auto Reconnect",
