@@ -1,3 +1,6 @@
+local Rayfield = loadstring(game:HttpGet(
+    "https://sirius.menu/rayfield"
+))()
 local HWID_FILE = "valhalla_hwid.txt"
 local hwid = ""
 
