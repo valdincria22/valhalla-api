@@ -89,17 +89,25 @@ Tab:CreateToggle({
    Callback = function(Value)
       isRunning = Value
       if isRunning then
-         local ClaimReward = ReplicatedStorage
-            :WaitForChild("Packages")
-            :WaitForChild("_Index")
-            :WaitForChild("sleitnick_knit@1.7.0")
-            :WaitForChild("knit")
-            :WaitForChild("Services")
-            :WaitForChild("ChallengeService")
-            :WaitForChild("RF")
-            :WaitForChild("ClaimReward")
-
          task.spawn(function()
+            -- Espera o caminho existir antes de continuar
+            local ok, ClaimReward = pcall(function()
+               return ReplicatedStorage
+                  :WaitForChild("Packages", 10)
+                  :WaitForChild("_Index", 10)
+                  :WaitForChild("sleitnick_knit@1.7.0", 10)
+                  :WaitForChild("knit", 10)
+                  :WaitForChild("Services", 10)
+                  :WaitForChild("ChallengeService", 10)
+                  :WaitForChild("RF", 10)
+                  :WaitForChild("ClaimReward", 10)
+            end)
+
+            if not ok or not ClaimReward then
+               warn("ClaimReward não encontrado!")
+               return
+            end
+
             while isRunning do
                pcall(function()
                   ClaimReward:InvokeServer(currentId)
