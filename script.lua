@@ -1,4 +1,4 @@
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/UI-Interface/Rayfield/main/source.lua'))()
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
