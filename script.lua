@@ -1,223 +1,64 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local player = game.Players.LocalPlayer
-local VirtualUser = game:GetService("VirtualInputManager")
-local TeleportService = game:GetService("TeleportService")
+local L = {
+    Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))(),
+    API = "https://valhalla-api-production-cc2a.up.railway.app/",
+    FILE = "valhalla_hwid.txt",
+    HttpGet = game.HttpGet,
+    random = math.random,
+    sub = string.sub,
+    gsub = string.gsub
+}
 
-local Rayfield = loadstring(game:HttpGet(
-    "https://sirius.menu/rayfield"
-))()
-
---------------------------------------------------
--- HWID
---------------------------------------------------
-
-local HWID_FILE = "valhalla_hwid.txt"
 local hwid = ""
+local ok, content = pcall(readfile, L.FILE)
 
-local ok, conteudo = pcall(readfile, HWID_FILE)
-if ok and conteudo and conteudo ~= "" then
-    hwid = conteudo
+if ok and content and content ~= "" then
+    hwid = content
 else
     local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     local id = ""
     for i = 1, 32 do
-        local rand = math.random(1, #chars)
-        id = id .. chars:sub(rand, rand)
+        local r = L.random(1, #chars)
+        id = id .. L.sub(chars, r, r)
     end
     hwid = id
-    pcall(writefile, HWID_FILE, hwid)
+    pcall(writefile, L.FILE, hwid)
 end
 
---------------------------------------------------
--- BUSCA KEYS DA API
---------------------------------------------------
+local keys = {}
 
-local API = "https://valhalla-api-production-cc2a.up.railway.app"
-local keysValidas = {}
-
-local ok2 = pcall(function()
-    local raw = game:HttpGet(API .. "/keys")
-    for linha in raw:gmatch("[^\r\n]+") do
-        local key = linha:gsub("%s+", ""):gsub("[%c]", "")
-        if key ~= "" then
-            table.insert(keysValidas, key)
+pcall(function()
+    local raw = L.HttpGet(game, L.API .. "/keys")
+    for line in raw:gmatch("[^\r\n]+") do
+        local k = L.gsub(L.gsub(line, "%s+", ""), "[%c]", "")
+        if k ~= "" then
+            table.insert(keys, k)
         end
     end
 end)
 
-if not ok2 or #keysValidas == 0 then
-    keysValidas = {"ERRO-API-OFFLINE"}
+if #keys == 0 then
+    keys = {"ERRO-API-OFFLINE"}
 end
 
---------------------------------------------------
--- WINDOW
---------------------------------------------------
+L.Rayfield:CreateWindow({
+    Name = "Valhalla Hub",
+    LoadingTitle = "Valhalla Loading",
+    LoadingSubtitle = "by App",
+    KeySystem = true,
+    KeySettings = {
+        Title = "App Keys",
+        Subtitle = "Key System",
+        Note = "Pegue a key com o App",
+        FileName = "Key",
+        SaveKey = true,
+        Key = keys,
+        Callback = function(k)
+            pcall(function()
+                local clean = L.gsub(L.gsub(k, "%s+", ""), "[%c]", "")
+                L.HttpGet(game, L.API .. "/validate?key=" .. clean .. "&hwid=" .. hwid)
+            end)
 
-local Window = Rayfield:CreateWindow({
-   Name = "Valhalla Hub",
-   LoadingTitle = "Valhalla Loading",
-   LoadingSubtitle = "by App",
-   Theme = "Default",
-   ToggleUIKeybind = "F8",
-
-   ConfigurationSaving = {
-      Enabled = true,
-      FileName = "Valhalla Hub"
-   },
-
-   KeySystem = true,
-   KeySettings = {
-      Title = "App Keys",
-      Subtitle = "Key System",
-      Note = "Pegue a key com o App",
-      FileName = "Key",
-      SaveKey = true,
-      Key = keysValidas,
-
-      Callback = function(keyDigitada)
-         pcall(function()
-            local keyLimpa = keyDigitada:gsub("%s+", ""):gsub("[%c]", "")
-            game:HttpGet(API .. "/validate?key=" .. keyLimpa .. "&hwid=" .. hwid)
-         end)
-      end
-   }
-})
-
-local Tab = Window:CreateTab("Valhalla Hub", 4483362458)
-
---------------------------------------------------
--- AUTO REWARD
---------------------------------------------------
-
-local isRunning = false
-
-Tab:CreateToggle({
-   Name = "Auto Rewards",
-   CurrentValue = false,
-   Callback = function(Value)
-      isRunning = Value
-      if isRunning then
-         task.spawn(function()
-            local base = ReplicatedStorage
-               :WaitForChild("Packages")
-               :WaitForChild("_Index")
-               :WaitForChild("sleitnick_knit@1.7.0")
-               :WaitForChild("knit")
-               :WaitForChild("Services")
-
-            local function getRemote(serviceName, rfOrRe, remoteName)
-               local ok, remote = pcall(function()
-                  return base
-                     :WaitForChild(serviceName)
-                     :WaitForChild(rfOrRe)
-                     :WaitForChild(remoteName)
-               end)
-               if ok and remote then
-                  return remote
-               else
-                  warn("Não encontrado: " .. serviceName .. "/" .. remoteName)
-                  return nil
-               end
-            end
-
-            local remotes = {
-               getRemote("GameService",              "RF", "AwardDailyReward"),
-               getRemote("QuestService",             "RF", "Claim"),
-               getRemote("QuestService",             "RF", "ClaimAll"),
-               getRemote("LevelService",             "RF", "ClaimLevelRewards"),
-               getRemote("RewardService",            "RF", "RequestReward"),
-               getRemote("MasteryService",           "RF", "RequestClaim"),
-               getRemote("SeasonService",            "RF", "RequestRewardClaim"),
-               getRemote("SeasonService",            "RF", "ClaimDailyPresent"),
-               getRemote("SeasonService",            "RF", "RefreshDailyPresents"),
-               getRemote("ChallengeService",         "RF", "ClaimReward"),
-               getRemote("LeaderboardRewardService", "RF", "RequestReward"),
-            }
-
-            while isRunning do
-               for _, remote in pairs(remotes) do
-                  if remote then
-                     pcall(function()
-                        remote:InvokeServer()
-                     end)
-                     task.wait(0.3)
-                  end
-               end
-               task.wait(2)
-            end
-         end)
-      end
-   end
-})
-
---------------------------------------------------
--- FPS BOOST
---------------------------------------------------
-
-Tab:CreateToggle({
-   Name = "FPS Boost + Anti Texture",
-   CurrentValue = false,
-   Callback = function(Value)
-      if Value then
-         for _,v in pairs(game:GetDescendants()) do
-            if v:IsA("Texture") or v:IsA("Decal") then v:Destroy() end
-            if v:IsA("ParticleEmitter") or v:IsA("Trail") then v:Destroy() end
-            if v:IsA("BasePart") then
-               v.Material = Enum.Material.Plastic
-               v.Reflectance = 0
-            end
-         end
-         game.Lighting.GlobalShadows = false
-         game.Lighting.FogEnd = 100000
-         settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-      end
-   end
-})
-
---------------------------------------------------
--- REMOVE TEXTURES
---------------------------------------------------
-
-Tab:CreateButton({
-   Name = "Remove Textures",
-   Callback = function()
-      for _,obj in pairs(game:GetDescendants()) do
-         if obj:IsA("Texture") or obj:IsA("Decal") then
-            obj:Destroy()
-         end
-      end
-   end
-})
-
---------------------------------------------------
--- ANTI AFK
---------------------------------------------------
-
-Tab:CreateToggle({
-   Name = "Anti AFK",
-   CurrentValue = false,
-   Callback = function(Value)
-      if Value then
-         player.Idled:Connect(function()
-            VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-            task.wait(1)
-            VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-         end)
-      end
-   end
-})
-
---------------------------------------------------
--- AUTO RECONNECT
---------------------------------------------------
-
-Tab:CreateButton({
-   Name = "Auto Reconnect",
-   Callback = function()
-      player.OnTeleport:Connect(function(State)
-         if State == Enum.TeleportState.Failed then
-            TeleportService:Teleport(game.PlaceId, player)
-         end
-      end)
-   end
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/valdincria22/valhalla-api/refs/heads/main/.lua"))()
+        end
+    }
 })
