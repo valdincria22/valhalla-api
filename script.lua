@@ -1,11 +1,10 @@
-local L = {
-    Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))(),
-    API = "https://valhalla-api-production-cc2a.up.railway.app",
-    FILE = "valhalla_hwid.txt",
-}
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local API = "https://valhalla-api-production-cc2a.up.railway.app"
+local FILE = "valhalla_hwid.txt"
 
 local hwid = ""
-local ok, content = pcall(readfile, L.FILE)
+local ok, content = pcall(readfile, FILE)
 if ok and content and content ~= "" then
     hwid = content
 else
@@ -16,12 +15,12 @@ else
         id = id .. chars:sub(r, r)
     end
     hwid = id
-    pcall(writefile, L.FILE, hwid)
+    pcall(writefile, FILE, hwid)
 end
 
 local keys = {}
 pcall(function()
-    local raw = game:HttpGet(L.API .. "/keys")
+    local raw = game:HttpGet(API .. "/keys")
     for line in raw:gmatch("[^\r\n]+") do
         local k = line:match("^%s*(.-)%s*$"):gsub("[%c%s]", "")
         if k ~= "" then
@@ -34,10 +33,15 @@ if #keys == 0 then
     keys = {"ERRO-API-OFFLINE"}
 end
 
-L.Rayfield:CreateWindow({
+local Window = Rayfield:CreateWindow({
     Name = "Valhalla Hub",
     LoadingTitle = "Valhalla Loading",
     LoadingSubtitle = "by App",
+    Theme = "Default",
+    ToggleUIKeybind = "F8",
+    ConfigurationSaving = {
+        Enabled = false,
+    },
     KeySystem = true,
     KeySettings = {
         Title = "App Keys",
@@ -49,7 +53,7 @@ L.Rayfield:CreateWindow({
         Callback = function(k)
             pcall(function()
                 local clean = k:match("^%s*(.-)%s*$"):gsub("[%c%s]", "")
-                game:HttpGet(L.API .. "/validate?key=" .. clean .. "&hwid=" .. hwid)
+                game:HttpGet(API .. "/validate?key=" .. clean .. "&hwid=" .. hwid)
             end)
             loadstring(game:HttpGet("https://raw.githubusercontent.com/valdincria22/valhalla-api/refs/heads/main/.lua"))()
         end
