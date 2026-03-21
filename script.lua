@@ -104,12 +104,11 @@ Tab:CreateToggle({
                return
             end
 
-            -- Pega cada remote com proteção individual
-            local function getRemote(serviceName, remoteName)
+            local function getRemote(serviceName, rfOrRe, remoteName)
                local ok, remote = pcall(function()
                   return base
                      :WaitForChild(serviceName, 5)
-                     :WaitForChild("RF", 5)
+                     :WaitForChild(rfOrRe, 5)
                      :WaitForChild(remoteName, 5)
                end)
                if ok and remote then
@@ -121,15 +120,17 @@ Tab:CreateToggle({
             end
 
             local remotes = {
-               getRemote("GameService", "AwardDailyReward"),
-               getRemote("QuestService", "Claim"),
-               getRemote("QuestService", "ClaimAll"),
-               getRemote("LevelService", "ClaimLevelRewards"),
-               getRemote("RewardService", "RequestReward"),
-               getRemote("MasteryService", "RequestClaim"),
-               getRemote("SeasonService", "ClaimDailyPresent"),
-               getRemote("SeasonService", "RequestRewardClaim"),
-               getRemote("ChallengeService", "ClaimReward"),
+               getRemote("GameService",            "RF", "AwardDailyReward"),
+               getRemote("QuestService",           "RF", "Claim"),
+               getRemote("QuestService",           "RF", "ClaimAll"),
+               getRemote("LevelService",           "RF", "ClaimLevelRewards"),
+               getRemote("RewardService",          "RF", "RequestReward"),
+               getRemote("MasteryService",         "RF", "RequestClaim"),
+               getRemote("SeasonService",          "RF", "RequestRewardClaim"),
+               getRemote("SeasonService",          "RF", "ClaimDailyPresent"),
+               getRemote("SeasonService",          "RF", "RefreshDailyPresents"),
+               getRemote("ChallengeService",       "RF", "ClaimReward"),
+               getRemote("LeaderboardRewardService", "RF", "RequestReward"),
             }
 
             while isRunning do
@@ -141,7 +142,7 @@ Tab:CreateToggle({
                      task.wait(0.3)
                   end
                end
-               task.wait(1)
+               task.wait(2)
             end
          end)
       end
