@@ -22,10 +22,6 @@ else
     pcall(writefile, FILE, hwid)
 end
 
---------------------------------------------------
--- KEY SYSTEM
---------------------------------------------------
-
 local keys = {}
 pcall(function()
     local raw = game:HttpGet(API .. "/keys")
