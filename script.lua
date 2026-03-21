@@ -1,6 +1,16 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local player = game.Players.LocalPlayer
+local VirtualUser = game:GetService("VirtualInputManager")
+local TeleportService = game:GetService("TeleportService")
+
 local Rayfield = loadstring(game:HttpGet(
     "https://sirius.menu/rayfield"
 ))()
+
+--------------------------------------------------
+-- HWID
+--------------------------------------------------
+
 local HWID_FILE = "valhalla_hwid.txt"
 local hwid = ""
 
@@ -23,7 +33,6 @@ end
 --------------------------------------------------
 
 local API = "https://valhalla-api-production-cc2a.up.railway.app"
-
 local keysValidas = {}
 
 local ok2 = pcall(function()
@@ -81,7 +90,6 @@ local Tab = Window:CreateTab("Valhalla Hub", 4483362458)
 --------------------------------------------------
 
 local isRunning = false
-local currentId = 1
 
 Tab:CreateToggle({
    Name = "Auto Rewards",
@@ -91,18 +99,18 @@ Tab:CreateToggle({
       if isRunning then
          task.spawn(function()
             local base = ReplicatedStorage
-               :WaitForChild("Packages", 10)
-               :WaitForChild("_Index", 10)
-               :WaitForChild("sleitnick_knit@1.7.0", 10)
-               :WaitForChild("knit", 10)
-               :WaitForChild("Services", 10)
+               :WaitForChild("Packages")
+               :WaitForChild("_Index")
+               :WaitForChild("sleitnick_knit@1.7.0")
+               :WaitForChild("knit")
+               :WaitForChild("Services")
 
             local function getRemote(serviceName, rfOrRe, remoteName)
                local ok, remote = pcall(function()
                   return base
-                     :WaitForChild(serviceName, 5)
-                     :WaitForChild(rfOrRe, 5)
-                     :WaitForChild(remoteName, 5)
+                     :WaitForChild(serviceName)
+                     :WaitForChild(rfOrRe)
+                     :WaitForChild(remoteName)
                end)
                if ok and remote then
                   return remote
@@ -141,6 +149,7 @@ Tab:CreateToggle({
       end
    end
 })
+
 --------------------------------------------------
 -- FPS BOOST
 --------------------------------------------------
