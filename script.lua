@@ -1,16 +1,15 @@
-local ok, Rayfield = pcall(function()
-    return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
-end)
+local repo = 'https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/'
 
-if not ok or not Rayfield then
-    Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source.lua"))()
-end
+local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
+local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
+local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
 
 local API = "https://valhalla-api-production-cc2a.up.railway.app"
 local FILE = "valhalla_hwid.txt"
 local hwid = ""
-local ok2, content = pcall(readfile, FILE)
-if ok2 and content and content ~= "" then
+
+local ok, content = pcall(readfile, FILE)
+if ok and content and content ~= "" then
     hwid = content
 else
     local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -22,6 +21,10 @@ else
     hwid = id
     pcall(writefile, FILE, hwid)
 end
+
+--------------------------------------------------
+-- KEY SYSTEM
+--------------------------------------------------
 
 local keys = {}
 pcall(function()
@@ -38,29 +41,22 @@ if #keys == 0 then
     keys = {"ERRO-API-OFFLINE"}
 end
 
-local Window = Rayfield:CreateWindow({
-    Name = "Valhalla Hub",
-    LoadingTitle = "Valhalla Loading",
-    LoadingSubtitle = "by App",
-    Theme = "Default",
-    ToggleUIKeybind = "F8",
-    ConfigurationSaving = {
-        Enabled = false,
-    },
-    KeySystem = true,
-    KeySettings = {
-        Title = "App Keys",
-        Subtitle = "Key System",
-        Note = "Pegue a key com o App",
-        FileName = "Key",
-        SaveKey = true,
-        Key = keys,
-        Callback = function(k)
+local keyValida = false
+local keyPrompt = Library:CreateWindow('Valhalla Hub - Key System')
+local keyBox = keyPrompt:AddTextbox('Digite sua Key:', '', function(v)
+    local clean = v:match("^%s*(.-)%s*$"):gsub("[%c%s]", "")
+    for _, k in pairs(keys) do
+        if clean == k then
+            keyValida = true
             pcall(function()
-                local clean = k:match("^%s*(.-)%s*$"):gsub("[%c%s]", "")
                 game:HttpGet(API .. "/validate?key=" .. clean .. "&hwid=" .. hwid)
             end)
+            Library:Notify("Key válida! Carregando...", 3)
+            task.wait(1)
+            keyPrompt:Destroy()
             loadstring(game:HttpGet("https://raw.githubusercontent.com/valdincria22/valhalla-api/refs/heads/main/.lua"))()
+            return
         end
-    }
-})
+    end
+    Library:Notify("Key inválida!", 3)
+end)
