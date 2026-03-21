@@ -1,11 +1,16 @@
-local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/UI-Interface/Rayfield/main/source.lua"))()
+local ok, Rayfield = pcall(function()
+    return loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+end)
+
+if not ok or not Rayfield then
+    Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source.lua"))()
+end
 
 local API = "https://valhalla-api-production-cc2a.up.railway.app"
 local FILE = "valhalla_hwid.txt"
-
 local hwid = ""
-local ok, content = pcall(readfile, FILE)
-if ok and content and content ~= "" then
+local ok2, content = pcall(readfile, FILE)
+if ok2 and content and content ~= "" then
     hwid = content
 else
     local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
