@@ -90,31 +90,56 @@ Tab:CreateToggle({
       isRunning = Value
       if isRunning then
          task.spawn(function()
-            local base = ReplicatedStorage
-               :WaitForChild("Packages")
-               :WaitForChild("_Index")
-               :WaitForChild("sleitnick_knit@1.7.0")
-               :WaitForChild("knit")
-               :WaitForChild("Services")
+            local ok, base = pcall(function()
+               return ReplicatedStorage
+                  :WaitForChild("Packages", 10)
+                  :WaitForChild("_Index", 10)
+                  :WaitForChild("sleitnick_knit@1.7.0", 10)
+                  :WaitForChild("knit", 10)
+                  :WaitForChild("Services", 10)
+            end)
+
+            if not ok or not base then
+               warn("Base não encontrada!")
+               return
+            end
+
+            -- Pega cada remote com proteção individual
+            local function getRemote(serviceName, remoteName)
+               local ok, remote = pcall(function()
+                  return base
+                     :WaitForChild(serviceName, 5)
+                     :WaitForChild("RF", 5)
+                     :WaitForChild(remoteName, 5)
+               end)
+               if ok and remote then
+                  return remote
+               else
+                  warn("Não encontrado: " .. serviceName .. "/" .. remoteName)
+                  return nil
+               end
+            end
 
             local remotes = {
-               base:WaitForChild("GameService"):WaitForChild("RF"):WaitForChild("AwardDailyReward"),
-               base:WaitForChild("QuestService"):WaitForChild("RF"):WaitForChild("Claim"),
-               base:WaitForChild("QuestService"):WaitForChild("RF"):WaitForChild("ClaimAll"),
-               base:WaitForChild("LevelService"):WaitForChild("RF"):WaitForChild("ClaimLevelRewards"),
-               base:WaitForChild("RewardService"):WaitForChild("RF"):WaitForChild("RequestReward"),
-               base:WaitForChild("MasteryService"):WaitForChild("RF"):WaitForChild("RequestClaim"),
-               base:WaitForChild("SeasonService"):WaitForChild("RF"):WaitForChild("ClaimDailyPresent"),
-               base:WaitForChild("SeasonService"):WaitForChild("RF"):WaitForChild("RequestRewardClaim"),
-               base:WaitForChild("ChallengeService"):WaitForChild("RF"):WaitForChild("ClaimReward"),
+               getRemote("GameService", "AwardDailyReward"),
+               getRemote("QuestService", "Claim"),
+               getRemote("QuestService", "ClaimAll"),
+               getRemote("LevelService", "ClaimLevelRewards"),
+               getRemote("RewardService", "RequestReward"),
+               getRemote("MasteryService", "RequestClaim"),
+               getRemote("SeasonService", "ClaimDailyPresent"),
+               getRemote("SeasonService", "RequestRewardClaim"),
+               getRemote("ChallengeService", "ClaimReward"),
             }
 
             while isRunning do
                for _, remote in pairs(remotes) do
-                  pcall(function()
-                     remote:InvokeServer()
-                  end)
-                  task.wait(0.3)
+                  if remote then
+                     pcall(function()
+                        remote:InvokeServer()
+                     end)
+                     task.wait(0.3)
+                  end
                end
                task.wait(1)
             end
