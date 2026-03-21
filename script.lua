@@ -90,19 +90,12 @@ Tab:CreateToggle({
       isRunning = Value
       if isRunning then
          task.spawn(function()
-            local ok, base = pcall(function()
-               return ReplicatedStorage
-                  :WaitForChild("Packages", 10)
-                  :WaitForChild("_Index", 10)
-                  :WaitForChild("sleitnick_knit@1.7.0", 10)
-                  :WaitForChild("knit", 10)
-                  :WaitForChild("Services", 10)
-            end)
-
-            if not ok or not base then
-               warn("Base não encontrada!")
-               return
-            end
+            local base = ReplicatedStorage
+               :WaitForChild("Packages", 10)
+               :WaitForChild("_Index", 10)
+               :WaitForChild("sleitnick_knit@1.7.0", 10)
+               :WaitForChild("knit", 10)
+               :WaitForChild("Services", 10)
 
             local function getRemote(serviceName, rfOrRe, remoteName)
                local ok, remote = pcall(function()
@@ -120,16 +113,16 @@ Tab:CreateToggle({
             end
 
             local remotes = {
-               getRemote("GameService",            "RF", "AwardDailyReward"),
-               getRemote("QuestService",           "RF", "Claim"),
-               getRemote("QuestService",           "RF", "ClaimAll"),
-               getRemote("LevelService",           "RF", "ClaimLevelRewards"),
-               getRemote("RewardService",          "RF", "RequestReward"),
-               getRemote("MasteryService",         "RF", "RequestClaim"),
-               getRemote("SeasonService",          "RF", "RequestRewardClaim"),
-               getRemote("SeasonService",          "RF", "ClaimDailyPresent"),
-               getRemote("SeasonService",          "RF", "RefreshDailyPresents"),
-               getRemote("ChallengeService",       "RF", "ClaimReward"),
+               getRemote("GameService",              "RF", "AwardDailyReward"),
+               getRemote("QuestService",             "RF", "Claim"),
+               getRemote("QuestService",             "RF", "ClaimAll"),
+               getRemote("LevelService",             "RF", "ClaimLevelRewards"),
+               getRemote("RewardService",            "RF", "RequestReward"),
+               getRemote("MasteryService",           "RF", "RequestClaim"),
+               getRemote("SeasonService",            "RF", "RequestRewardClaim"),
+               getRemote("SeasonService",            "RF", "ClaimDailyPresent"),
+               getRemote("SeasonService",            "RF", "RefreshDailyPresents"),
+               getRemote("ChallengeService",         "RF", "ClaimReward"),
                getRemote("LeaderboardRewardService", "RF", "RequestReward"),
             }
 
