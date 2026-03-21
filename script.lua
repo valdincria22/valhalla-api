@@ -1,4 +1,4 @@
-local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+local Rayfield = loadstring(game:HttpGet("https://raw.githubusercontent.com/UI-Interface/Rayfield/main/source.lua"))()
 
 local API = "https://valhalla-api-production-cc2a.up.railway.app"
 local FILE = "valhalla_hwid.txt"
