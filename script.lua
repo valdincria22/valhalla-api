@@ -90,28 +90,33 @@ Tab:CreateToggle({
       isRunning = Value
       if isRunning then
          task.spawn(function()
-            local ok, RewardService = pcall(function()
-               return ReplicatedStorage
-                  :WaitForChild("Packages", 10)
-                  :WaitForChild("_Index", 10)
-                  :WaitForChild("sleitnick_knit@1.7.0", 10)
-                  :WaitForChild("knit", 10)
-                  :WaitForChild("Services", 10)
-                  :WaitForChild("RewardService", 10)
-                  :WaitForChild("RF", 10)
-                  :WaitForChild("RequestPlayWithDeveloperAward", 10)
-            end)
+            local base = ReplicatedStorage
+               :WaitForChild("Packages")
+               :WaitForChild("_Index")
+               :WaitForChild("sleitnick_knit@1.7.0")
+               :WaitForChild("knit")
+               :WaitForChild("Services")
 
-            if not ok or not RewardService then
-               warn("RewardService não encontrado!")
-               return
-            end
+            local remotes = {
+               base:WaitForChild("GameService"):WaitForChild("RF"):WaitForChild("AwardDailyReward"),
+               base:WaitForChild("QuestService"):WaitForChild("RF"):WaitForChild("Claim"),
+               base:WaitForChild("QuestService"):WaitForChild("RF"):WaitForChild("ClaimAll"),
+               base:WaitForChild("LevelService"):WaitForChild("RF"):WaitForChild("ClaimLevelRewards"),
+               base:WaitForChild("RewardService"):WaitForChild("RF"):WaitForChild("RequestReward"),
+               base:WaitForChild("MasteryService"):WaitForChild("RF"):WaitForChild("RequestClaim"),
+               base:WaitForChild("SeasonService"):WaitForChild("RF"):WaitForChild("ClaimDailyPresent"),
+               base:WaitForChild("SeasonService"):WaitForChild("RF"):WaitForChild("RequestRewardClaim"),
+               base:WaitForChild("ChallengeService"):WaitForChild("RF"):WaitForChild("ClaimReward"),
+            }
 
             while isRunning do
-               pcall(function()
-                  RewardService:InvokeServer()
-               end)
-               task.wait(0.5)
+               for _, remote in pairs(remotes) do
+                  pcall(function()
+                     remote:InvokeServer()
+                  end)
+                  task.wait(0.3)
+               end
+               task.wait(1)
             end
          end)
       end
