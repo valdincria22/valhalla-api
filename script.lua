@@ -37,22 +37,42 @@ if #keys == 0 then
     keys = {"ERRO-API-OFFLINE"}
 end
 
-local keyValida = false
-local keyPrompt = Library:CreateWindow('Valhalla Hub - Key System')
-local keyBox = keyPrompt:AddTextbox('Digite sua Key:', '', function(v)
-    local clean = v:match("^%s*(.-)%s*$"):gsub("[%c%s]", "")
-    for _, k in pairs(keys) do
-        if clean == k then
-            keyValida = true
-            pcall(function()
-                game:HttpGet(API .. "/validate?key=" .. clean .. "&hwid=" .. hwid)
-            end)
-            Library:Notify("Key válida! Carregando...", 3)
-            task.wait(1)
-            keyPrompt:Destroy()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/valdincria22/valhalla-api/refs/heads/main/.lua"))()
-            return
+--------------------------------------------------
+-- WINDOW
+--------------------------------------------------
+
+local Window = Library:CreateWindow('Valhalla Hub', true)
+local Tabs = {
+    Key = Window:AddTab('Key System'),
+}
+
+local KeyGroup = Tabs.Key:AddLeftGroupbox('Key System')
+
+KeyGroup:AddLabel('Pegue a key com o App')
+KeyGroup:AddInput('KeyInput', {
+    Default = '',
+    Numeric = false,
+    Finished = true,
+    Text = 'Digite sua Key',
+    Placeholder = 'VLH-XXXX-XXXX',
+    Callback = function(v)
+        local clean = v:match("^%s*(.-)%s*$"):gsub("[%c%s]", "")
+        for _, k in pairs(keys) do
+            if clean == k then
+                pcall(function()
+                    game:HttpGet(API .. "/validate?key=" .. clean .. "&hwid=" .. hwid)
+                end)
+                Library:Notify("Key válida! Carregando...", 3)
+                task.wait(1)
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/valdincria22/valhalla-api/refs/heads/main/.lua"))()
+                return
+            end
         end
+        Library:Notify("Key inválida!", 3)
     end
-    Library:Notify("Key inválida!", 3)
-end)
+})
+
+ThemeManager:SetLibrary(Library)
+SaveManager:SetLibrary(Library)
+ThemeManager:ApplyToTab(Tabs.Key)
+Library:Render()
